@@ -1,0 +1,416 @@
+\documentclass[11pt]{amsart}
+
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}[section]
+
+\title{Skolem pairings with separated pair sums}
+\author{Gleb Golovkov}
+\subjclass[2020]{Primary 05A18, Secondary 05B30}
+\keywords{Skolem sequence, pair partition, separated sums, interval certification}
+
+\begin{document}
+
+\begin{abstract}
+For \(n\ge2\), the integers \(1,\ldots,2n\) admit a pairing with
+differences \(1,\ldots,n\) and pair sums separated by at least two
+if and only if \(n\ge5\) and \(n\equiv0,1\pmod4\).
+Parity and the case \(n=4\) give necessity.
+Sufficiency uses linear-periodic block constructions in 18 classes
+modulo 36, machine-certified interval boundaries, and a finite
+search for 74 small orders.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+Write \([m]=\{1,\ldots,m\}\). A \emph{Skolem pairing of order \(n\)}
+is a partition of \([2n]\) into pairs \((a_k,b_k)\) with
+\(b_k-a_k=k\) for \(1\le k\le n\). We impose a separation condition
+on the ordinary integer sums \(s_k=a_k+b_k\).
+
+\begin{theorem}\label{thm:main}
+Let \(n\ge2\) be an integer. There is a Skolem pairing of order \(n\) with
+\[
+  |s_i-s_j|\ge2\qquad(1\le i<j\le n)
+\]
+if and only if \(n\ge5\) and \(n\equiv0,1\pmod4\).
+\end{theorem}
+
+A Skolem pairing gives a Skolem sequence by placing the two
+copies of \(k\) at positions \(a_k,b_k\) in a word of length
+\(2n\). Conversely, the positions of each symbol in a Skolem
+sequence recover its pair. In this language the theorem
+requires the midpoints of any two position pairs to be at
+distance at least one.
+
+For \(n=5\), the pairs in increasing order of difference are
+\[
+  (8,9),\quad (1,3),\quad (4,7),\quad (2,6),\quad (5,10).
+\]
+The sorted sums are \((4,8,11,15,17)\). Their successive
+gaps are \((4,3,4,2)\).
+
+Skolem proved that the difference condition alone is possible
+exactly when \(n\equiv0,1\pmod4\) \cite{skolem}. A strong Skolem
+starter requires the pair sums to have distinct nonzero residues
+modulo \(2n+1\). The example modulo 11 in the preprint of
+Ogandzhanyants, Kondratieva, and Shalaby has consecutive ordinary
+sums 15 and 16 \cite[Example~1.6]{strong}.
+
+The repository address for the computational supplement is\newline
+\url{https://github.com/gleb-ml/spaced-skolem-partitions}.
+
+\section{Necessity}
+
+There are \(n\) odd labels in \([2n]\). Each of the
+\(\lceil n/2\rceil\) pairs of odd difference uses exactly one odd
+label. Every remaining pair has even difference, so it uses either
+two odd labels or two even labels. Consequently
+\(n-\lceil n/2\rceil=\lfloor n/2\rfloor\) is even. This holds
+exactly when \(n\equiv0,1\pmod4\).
+
+It remains to exclude \(n=4\). The reflection \(x\mapsto9-x\)
+preserves differences and changes each sum \(s\) into \(18-s\).
+Up to reflection, the pair of difference 4 is \((1,5)\) or
+\((2,6)\). We list the possible completions by choosing the
+pairs of differences 3 and 2 in that order.
+
+If the pair of difference 4 is \((1,5)\), the choices for
+difference 3 are \((3,6)\) and \((4,7)\). After \((3,6)\),
+only \((2,4)\) has difference 2 among the free labels, leaving
+\((7,8)\). After \((4,7)\), only \((6,8)\) has difference 2,
+leaving \((2,3)\).
+
+If the pair of difference 4 is \((2,6)\), the choices for
+difference 3 are \((1,4)\), \((4,7)\), and \((5,8)\). After \((1,4)\) the
+pairs of difference 2 are \((3,5)\) and \((5,7)\), which leave
+\((7,8)\) and \((3,8)\), respectively. After \((4,7)\) the
+pairs of difference 2 are \((1,3)\) and \((3,5)\), which leave
+\((5,8)\) and \((1,8)\), respectively. After \((5,8)\) the
+only pair of difference 2 is \((1,3)\), leaving \((4,7)\).
+Thus the only completion in this branch uses \((1,4)\), \((3,5)\),
+and \((7,8)\).
+
+The three resulting lists of sums in increasing order are
+\[
+  (6,6,9,15),\qquad (5,6,11,14),\qquad (5,8,8,15).
+\]
+Each list contains a repeated sum or consecutive sums. Reflection
+preserves this obstruction.
+
+\section{Linear interval certification}
+
+\subsection{Block parameters}
+
+Put \(n=12t+r\) and let \(c\) be the residue of \(t\) modulo 3,
+with \(0\le r<12\) and \(0\le c<3\). In each class \((r,c)\),
+a block consists of the pairs
+\begin{equation}\label{eq:block}
+  (At+a+pj,\ Bt+b+qj),\qquad j\in\mathbb Z,\quad 0\le j<wt+\ell.
+\end{equation}
+The ten shapes \((A,p,B,q,w)\) in Table~\ref{tab:shapes} are
+common to all classes. Each class specifies a triple
+\((a,b,\ell)\) for each shape and a list of individual pairs
+\((At+a,Bt+b)\), given by quadruples \((A,a,B,b)\).
+For each block, its left ends, right ends, differences, and sums
+are arithmetic progressions with signed steps \(p,q,q-p,p+q\),
+respectively. An individual pair contributes a singleton to each
+of these lists.
+
+\begin{table}[htbp]
+\centering
+\caption{The common block shapes and their signed steps.}
+\label{tab:shapes}
+\begin{tabular}{@{}rrrrrrrr@{}}
+\toprule
+Block & \(A\) & \(p\) & \(B\) & \(q\) & \(w\) & \(q-p\) & \(p+q\)\\
+\midrule
+1 & 10 & -4 & 20 & -2 & 1 & 2 & -6\\
+2 & 12 & -4 & 20 & -2 & 1 & 2 & -6\\
+3 & 18 & -4 & 24 & -2 & 1 & 2 & -6\\
+4 & 8 & -4 & 14 & 2 & 1 & 6 & -2\\
+5 & 10 & -4 & 10 & 2 & 2 & 6 & -2\\
+6 & 2 & -2 & 2 & 4 & 1 & 6 & 2\\
+7 & 4 & -2 & 4 & 4 & 2 & 6 & 2\\
+8 & 12 & 2 & 14 & 4 & 1 & 2 & 6\\
+9 & 16 & 2 & 20 & 4 & 1 & 2 & 6\\
+10 & 20 & 2 & 20 & 4 & 1 & 2 & 6\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Interval lemma}
+
+For an integer interval \([L,R]\) we mean the set of integers
+from \(L\) to \(R\), inclusive. A list of progressions or
+intervals is treated as a family with indices, so identical
+entries contribute distinct copies.
+
+\begin{lemma}[Linear interval certification]\label{lem:certify}
+Let \(t=t_*+12u\) for \(u\in\mathbb Z_{\ge0}\), with \(t_*\)
+a fixed integer. Consider a finite family of progressions
+\[
+  \{\alpha t+\beta+ej:j\in\mathbb Z,\ 0\le j<wt+\ell\}
+\]
+with integer coefficients. Each either has exactly one term
+for all \(t\), or has \(w>0\), \(d=|e|>0\) dividing 12, and
+\(wt_*+\ell\ge12/d\). For each residue \(z\) modulo 12, take
+the intervals obtained from the progressions in the coordinate
+\(v=(x-z)/12\) and order them by their left endpoints at \(u=0\).
+Use this order for all subsequent comparisons.
+
+\begin{enumerate}
+\item If the gaps between consecutive intervals are nonnegative
+at \(u=0\) and each gap at \(u=1\) is at least its value at
+\(u=0\), the progressions are pairwise disjoint for every
+\(u\ge0\).
+\item Suppose \(M(t)\) is affine in \(t\) with integer coefficients
+and \(M(t)\ge12\) for all \(u\ge0\). If each residue has a
+nonempty list and the gaps between consecutive intervals and
+both gaps at the ends of \([M(t)]\) are zero at \(u=0,1\),
+the progressions partition \([M(t)]\) for every \(u\ge0\).
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Write \(m=wt+\ell\). For a progression with \(e\ne0\), its two
+extreme terms are \(\alpha t+\beta\) and
+\(\alpha t+\beta+e(m-1)\). Their order is fixed because
+\(m\ge12/d\ge1\) and the sign of \(e\) is fixed. Thus the
+ordered extremes are
+\[
+  \operatorname{lo}(u)=L_0+12\lambda u,\qquad
+  \operatorname{hi}(u)=R_0+12\rho u
+\]
+for integers \(L_0,R_0,\lambda,\rho\).
+The progression lies in a single residue modulo \(d\),
+which is independent of \(u\). In each run of \(12/d\)
+consecutive terms it visits every compatible residue modulo 12
+exactly once. Hence a compatible residue occurs at \(u=0\)
+and at all later values of \(u\). For such a residue \(z\),
+the interval in the coordinate \(v\) has endpoints
+\begin{align*}
+  L(u)&=\left\lceil\frac{\operatorname{lo}(u)-z}{12}\right\rceil
+       =\left\lceil\frac{L_0-z}{12}\right\rceil+\lambda u,\\
+  R(u)&=\left\lfloor\frac{\operatorname{hi}(u)-z}{12}\right\rfloor
+       =\left\lfloor\frac{R_0-z}{12}\right\rfloor+\rho u.
+\end{align*}
+A singleton belongs to a fixed residue modulo 12 and gives an
+interval whose two endpoints are the same affine function.
+Thus the list of intervals for each \(z\) stays fixed as a list
+of indexed affine endpoints.
+
+For consecutive intervals in the chosen order, the number of
+integers strictly between them, when they are disjoint, is
+measured by the signed gap
+\[
+  g(u)=L_{\mathrm{next}}(u)-R_{\mathrm{prev}}(u)-1
+      =g(0)+u\bigl(g(1)-g(0)\bigr).
+\]
+The inequalities in part~(1) give \(g(u)\ge0\), so this order
+remains disjoint. Distinct residues are disjoint as sets of
+integers, which proves part~(1).
+
+For part~(2), the target interval in residue \(z\) is
+\[
+  \left[\left\lceil\frac{1-z}{12}\right\rceil,
+         \left\lfloor\frac{M(t)-z}{12}\right\rfloor\right].
+\]
+The end gaps are the first left endpoint minus the target left
+endpoint and the target right endpoint minus the last right
+endpoint. They are affine in \(u\), since \(M(t)\) changes by a
+multiple of 12 when \(t\) increases by 12. Each end gap and each
+internal gap vanishes identically if it is zero at \(u=0,1\).
+The intervals therefore partition the target in every residue.
+\end{proof}
+
+\subsection{Application to ends, differences, and sums}
+
+The absolute values of the four steps in each row of
+Table~\ref{tab:shapes} belong to \(\{2,4,6\}\), and each
+\(w\) is positive. The hypothesis on the number of terms is
+checked at \(t=t_*\). For the ends, we apply part~(2) of the
+lemma to the combined family of left and right progressions,
+with target \([2n]\). For the differences, we apply part~(2)
+with target \([n]\). This also forces \(a_k<b_k\) in every
+pair. The difference can then index the pair uniquely.
+
+To test separation, take each progression \(S\) of sums and its
+translate \(S+1\), retaining their indices. The signed sum step
+is even and nonzero in every block, so the elements within
+\(S\) are distinct, and \(S\) and \(S+1\) have opposite
+parity. For a singleton, its sum and its translate also have
+opposite parity. Hence a progression and its own translate
+do not create a conflict in any residue modulo 12.
+Two equal sums from distinct pairs appear in the same residue
+in the unshifted family. If two original sums differ by one,
+the larger equals an element of the translated family.
+Disjointness of the combined family therefore certifies
+\(|s_i-s_j|\ge2\). We obtain this disjointness by applying
+part~(1) of Lemma~\ref{lem:certify}.
+
+\section{Completion of the proof, verification, and open problems}
+
+\subsection{The certificate}
+
+The 18 classes and their thresholds are listed in
+Table~\ref{tab:thresholds}. The pairs \((r,c)\) correspond to the
+residues \(r+12c\) modulo 36. For a row with threshold \(t_0\),
+every \(t\ge t_0\) in the class is covered by
+\[
+  t=t_*+12u,\qquad
+  t_*\in\{t_0,t_0+3,t_0+6,t_0+9\},\quad
+  u\in\mathbb Z_{\ge0}.
+\]
+The full 18 tables of triples and quadruples are part of the
+computational supplement. They are embedded in \texttt{proof.py}
+and printed in plain text in \texttt{tables.txt}. The latter is
+generated by \texttt{python3 proof.py --tables}.
+
+\begin{table}[htbp]
+\centering
+\caption{Certified thresholds. The final column counts individual
+pairs in addition to the ten blocks.}
+\label{tab:thresholds}
+\begin{tabular}{@{}rrrrr@{}}
+\toprule
+\(r\) & \(c\) & \(t_0\) & \(n_0=12t_0+r\) & Individual pairs\\
+\midrule
+0 & 0 & 9 & 108 & 20\\
+0 & 1 & 10 & 120 & 28\\
+0 & 2 & 11 & 132 & 30\\
+1 & 0 & 15 & 181 & 30\\
+1 & 1 & 10 & 121 & 31\\
+1 & 2 & 17 & 205 & 30\\
+4 & 0 & 9 & 112 & 28\\
+4 & 1 & 13 & 160 & 54\\
+4 & 2 & 17 & 208 & 71\\
+5 & 0 & 15 & 185 & 49\\
+5 & 1 & 19 & 233 & 44\\
+5 & 2 & 14 & 173 & 33\\
+8 & 0 & 15 & 188 & 52\\
+8 & 1 & 10 & 128 & 34\\
+8 & 2 & 17 & 212 & 36\\
+9 & 0 & 15 & 189 & 53\\
+9 & 1 & 16 & 201 & 48\\
+9 & 2 & 17 & 213 & 48\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The routine \texttt{certify} forms the intervals at \(t_*\)
+and \(t_*+12\), using the order of the intervals at \(t_*\)
+for both evaluations. Across the 72 cases it checks
+\(30{,}076\) internal or end gaps, each at both parameter
+values. For the ends and differences, the two evaluations of
+each gap are zero. For the combined family of sums and shifted
+sums, the first evaluation is nonnegative and the second is at
+least the first. These checks have also been reproduced by
+computing the affine interval endpoints directly from the first
+and last indices in each residue class.
+
+\begin{proof}[Proof of sufficiency in Theorem~\ref{thm:main}]
+For \(n\) at or above the threshold of its class, the
+certificate and Lemma~\ref{lem:certify} give a partition with
+the three required properties. Every admissible \(n\) below its
+own class threshold is less than \(233\). There are 74 such
+orders. For each, the script finds a pairing by finite search
+and checks the sorted endpoint list, sorted difference list,
+and successive gaps of the sorted sums by direct evaluation.
+Together the two parts cover every \(n\ge5\) with
+\(n\equiv0,1\pmod4\).
+\end{proof}
+
+The script additionally runs \texttt{verify} for every
+admissible \(n\) from 5 through 600. It checks 298 pairings,
+including 224 obtained directly from the block formulas.
+
+\subsection{Enumeration at small orders}
+
+Table~\ref{tab:counts} counts each pairing once and counts
+distinct reflections separately. The enumeration assigns
+differences in decreasing order. It tries each free left end
+and its determined right end, discarding branches with a
+reused label or a new sum within one of an earlier sum.
+Each valid pairing determines one branch.
+
+\begin{table}[htbp]
+\centering
+\caption{Number of Skolem pairings with separated pair sums.}
+\label{tab:counts}
+\begin{tabular}{@{}lrrrrrrrrr@{}}
+\toprule
+Order \(n\)  & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 12\\
+\midrule
+Pairings  & 0 & 0 & 0 & 2 & 0 & 0 & 6 & 30 & 1300\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Open problems}
+
+\begin{enumerate}
+\item For \(d\ge1\), replace the prescribed differences by
+\(d,d+1,\ldots,d+n-1\), as in the Langford problem
+\cite{langford,simpson}. For ordinary pairings Simpson's
+criterion is \(n\ge2d-1\), with \(n\equiv0,1\pmod4\) for
+odd \(d\) and \(n\equiv0,3\pmod4\) for even \(d\).
+At \(n=2d-1\), the differences sum to \(n^2\), forcing the
+left ends to be \([n]\) and the right ends its complement.
+Separation in \([n+2,3n]\) would give the sums one parity,
+but each sum has the parity of its difference and both
+parities occur for \(d\ge2\).
+Under Simpson's parity conditions, does \(n\ge2d+3\)
+suffice for separation apart from \((d,n)=(2,7)\)?
+The latter case has zero separated pairings by exhaustive
+enumeration.
+
+\item Can one construct the separated pairings with fewer
+congruence classes, or specify the individual pairs by a
+uniform rule?
+
+\item Along \(n\equiv0,1\pmod4\), what is the asymptotic
+number of separated pairings? In particular, does their
+proportion among all Skolem pairings tend to zero?
+\end{enumerate}
+
+\subsection*{Acknowledgments}
+AI-assisted tools were used to search for block parameters and
+to organize the manuscript.
+The mathematical arguments and the verification script were
+checked independently, including by a separate implementation
+of the interval checks.
+
+\begin{thebibliography}{9}
+
+\bibitem{langford}
+C.~D. Langford, \emph{Problem},
+Math. Gaz. \textbf{42} (1958), no.~341, 228.
+\href{https://doi.org/10.2307/3610395}{doi:10.2307/3610395}.
+
+\bibitem{strong}
+O.~Ogandzhanyants, M.~Kondratieva, and N.~Shalaby,
+\emph{Strong Skolem starters},
+J. Combin. Des. \textbf{27} (2019), no.~1, 5--21.
+\href{https://doi.org/10.1002/jcd.21633}{doi:10.1002/jcd.21633}.
+Preprint \href{https://arxiv.org/abs/1805.05293}{arXiv:1805.05293}.
+
+\bibitem{simpson}
+J.~E. Simpson, \emph{Langford sequences: perfect and hooked},
+Discrete Math. \textbf{44} (1983), no.~1, 97--104.
+\href{https://doi.org/10.1016/0012-365X(83)90008-0}
+     {doi:10.1016/0012-365X(83)90008-0}.
+
+\bibitem{skolem}
+T.~Skolem, \emph{On certain distributions of integers in pairs
+with given differences}, Math. Scand. \textbf{5} (1957), 57--68.
+\href{https://doi.org/10.7146/math.scand.a-10490}
+     {doi:10.7146/math.scand.a-10490}.
+
+\end{thebibliography}
+
+\end{document}
